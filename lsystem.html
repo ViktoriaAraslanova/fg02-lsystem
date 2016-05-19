@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Cache-Control" content="no-cache"/>
+	<title>Lsystem</title>
+	<script>
+	
+	var angle;
+	var axioma;
+	var rule;
+	var s;
+	var n;
+
+	function create(){
+		canvas = document.createElement('canvas'); 
+		canvas.style.position = 'fixed'; 
+		canvas.style.top = '0px'; 
+		canvas.style.left = '0px'; 
+		canvas.width = document.body.offsetWidth; 
+		canvas.height = window.innerHeight; 
+		document.body.insertBefore(canvas, document.body.firstChild);
+		context = canvas.getContext('2d');
+		getWord();
+	}
+	
+	function drawSnowflake(){
+		axioma = "[F]+[F]+[F]+[F]+[F]+[F]";
+		rule = "F[+FF][-FF]FF[+F][-F]FF";
+		s = 6;
+		n = 2;
+		angle = Math.PI/3;
+		create();
+	}
+	
+	function drawBush(){
+		axioma = "F";
+		rule = " FF+[+F-F-F]-[-F+F+F]";
+		s = 5;
+		n = 4;	
+		angle = Math.PI/8;
+		create();
+	}
+
+	function getWord(){
+		var array=[];
+		var x = 200;
+		var y = 400;
+		var angle0=-Math.PI/2;
+		while(n!=0){
+			axioma = useRule(axioma,rule);
+			n--;
+		}
+		for(var i = 0; i < axioma.length; ++i){
+			switch(axioma.charAt(i)){
+				case 'F': 
+					var x1 = x + s* Math.cos(angle0);
+					var y1 = y + s* Math.sin(angle0);
+					draw(x, y, x1, y1, 1, "white");
+					x = x1;
+					y = y1;
+					break;	
+
+				case '+':
+					angle0 -= angle; 
+					break;
+				
+				case '-':
+					angle0 += angle; 
+					break;
+				
+				case '[': 
+					array.push(new Array(x,y,angle0)); 
+					break;
+				
+				case ']': 
+					var vrb = array.pop();
+					x = vrb[0];
+					y = vrb[1];
+					angle0 = vrb[2];
+				break;
+			}	
+		}
+	}
+
+	function useRule(axioma, rule){
+		var string = "";
+		for (var i = 0; i < axioma.length; i++){
+			var ch = axioma.charAt(i);
+			if(ch == 'F'){
+				string += rule;
+			}
+			else{
+				string += ch;
+			}
+		}
+		return string;
+	}
+	
+	function draw(x, y, x1, y1, widthLine, styleLine){
+			context.lineWidth = widthLine;
+			context.strokeStyle = styleLine;
+			context.beginPath();
+			context.moveTo(x,y);
+			context.lineTo(x1,y1);
+			context.stroke();
+	}
+
+	</script>
+	<body>
+	<body style="background:#80BFFF">
+   <input type="button" value = "draw snowflake" onclick= "drawSnowflake()"></br>
+   <input type="button" value = "draw bush" onclick= "drawBush()"></br>
+	</body>
+</html>
